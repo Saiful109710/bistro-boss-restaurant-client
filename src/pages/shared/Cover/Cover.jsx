@@ -10,7 +10,7 @@ const Cover = ({ img, title }) => {
       strength={-200}
     >
       <div
-        className="hero min-h-screen"
+        className="hero h-[600px]"
        
       >
         <div className="hero-overlay bg-opacity-60"></div>
