@@ -1,15 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 
 import loginImg from '../../assets/others//authentication2.png'
 import loginBgImg from '../../assets/others/authentication.png'
 import { Link } from "react-router-dom";
 import SocialLogin from "../shared/SocialLogin/SocialLogin";
+import { AuthContext } from "../../provider/AuthProvider";
 
 const Login = () => {
 
     const captchaRef = useRef(null)
     const [disabled,setIsDisabled] = useState(true)
+    const {logInUser} = useContext(AuthContext)
     useEffect(()=>{
         loadCaptchaEnginge(6); 
 
@@ -21,6 +23,12 @@ const Login = () => {
         const email = form.email.value
         const password = form.password.value
         const captcha = form.captcha.value
+
+        logInUser(email,password)
+        .then(result=>console.log(result.user))
+        .catch(err=>{
+            console.log(err.message)
+        })
     }
 
     const handleCaptchaValidate = ()=>{
@@ -37,7 +45,8 @@ const Login = () => {
         <div className="text-center lg:text-left">
           <img src={loginImg} alt="" />
         </div>
-        <div className="card  w-full max-w-sm shrink-0 ">
+        <div className="card py-10 w-full max-w-sm shrink-0 ">
+            <h2 className='text-4xl font-bold text-slate-800'>Sign In</h2>
           <form onSubmit={handleSubmit} className="card-body">
             <div className="form-control">
               <label className="label">
