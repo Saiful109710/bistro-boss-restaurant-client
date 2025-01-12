@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
-
+import Swal from 'sweetalert2'
 import loginImg from '../../assets/others//authentication2.png'
 import loginBgImg from '../../assets/others/authentication.png'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SocialLogin from "../shared/SocialLogin/SocialLogin";
 import { AuthContext } from "../../provider/AuthProvider";
 
@@ -12,6 +12,7 @@ const Login = () => {
     const captchaRef = useRef(null)
     const [disabled,setIsDisabled] = useState(true)
     const {logInUser} = useContext(AuthContext)
+    const navigate = useNavigate()
     useEffect(()=>{
         loadCaptchaEnginge(6); 
 
@@ -25,7 +26,28 @@ const Login = () => {
         const captcha = form.captcha.value
 
         logInUser(email,password)
-        .then(result=>console.log(result.user))
+        .then(result=>{
+          console.log(result.user)
+          
+          navigate('/')
+          Swal.fire({
+            title: "Custom animation with Animate.css",
+            showClass: {
+              popup: `
+                animate__animated
+                animate__fadeInUp
+                animate__faster
+              `
+            },
+            hideClass: {
+              popup: `
+                animate__animated
+                animate__fadeOutDown
+                animate__faster
+              `
+            }
+          });
+        })
         .catch(err=>{
             console.log(err.message)
         })
