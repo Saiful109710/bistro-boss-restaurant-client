@@ -3,16 +3,21 @@ import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, val
 import Swal from 'sweetalert2'
 import loginImg from '../../assets/others//authentication2.png'
 import loginBgImg from '../../assets/others/authentication.png'
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SocialLogin from "../shared/SocialLogin/SocialLogin";
 import { AuthContext } from "../../provider/AuthProvider";
 
 const Login = () => {
 
+    const location = useLocation()
+    
+
     const captchaRef = useRef(null)
     const [disabled,setIsDisabled] = useState(true)
     const {logInUser} = useContext(AuthContext)
     const navigate = useNavigate()
+    const from = location.state?.from?.pathname || '/'
+    console.log(location)
     useEffect(()=>{
         loadCaptchaEnginge(6); 
 
@@ -29,7 +34,7 @@ const Login = () => {
         .then(result=>{
           console.log(result.user)
           
-          navigate('/')
+          
           Swal.fire({
             title: "Custom animation with Animate.css",
             showClass: {
@@ -47,6 +52,8 @@ const Login = () => {
               `
             }
           });
+
+          navigate(from)
         })
         .catch(err=>{
             console.log(err.message)

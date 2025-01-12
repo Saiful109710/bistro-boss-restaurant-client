@@ -1,29 +1,42 @@
 import React, { useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../provider/AuthProvider";
+import { FaShoppingCart } from "react-icons/fa";
 
 const Navbar = () => {
+  const { user, logOutUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const {user,logOutUser} = useContext(AuthContext)
-  const navigate = useNavigate()
-
-
-  const handleLogOutBtn = ()=>{
-      logOutUser()
-      .then(()=>{
-        navigate('/login')
+  const handleLogOutBtn = () => {
+    logOutUser()
+      .then(() => {
+        navigate("/login");
       })
-      .catch(err=>{
-        console.log(err.message)
-      })
-  }
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
 
   const navOptions = (
     <>
-     <li><NavLink to='/'>Home</NavLink></li>
-     <li><NavLink to='/menu'>Our Menu</NavLink></li>
-     <li><NavLink to='/order/salad'>Order Food</NavLink></li>
-     <li><NavLink to='/login'>Login</NavLink></li>
+      <li>
+        <NavLink to="/">Home</NavLink>
+      </li>
+      <li>
+        <NavLink to="/menu">Our Menu</NavLink>
+      </li>
+      <li>
+        <NavLink to="/order/salad">Order Food</NavLink>
+      </li>
+      <li>
+        <NavLink to="/login">Login</NavLink>
+      </li>
+      <li>
+        <button className="btn">
+          <FaShoppingCart></FaShoppingCart>
+          <div className="badge badge-secondary">+0</div>
+        </button>
+      </li>
     </>
   );
   return (
@@ -60,13 +73,15 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{navOptions}</ul>
         </div>
         <div className="navbar-end">
-            {
-              user ? (
-                <button onClick={handleLogOutBtn} className="btn btn-ghost">Log Out</button>
-              ):(
-                <Link to='/login'><button className="btn btn-ghost">Log In</button></Link>
-              )
-            }
+          {user ? (
+            <button onClick={handleLogOutBtn} className="btn btn-ghost">
+              Log Out
+            </button>
+          ) : (
+            <Link to="/login">
+              <button className="btn btn-ghost">Log In</button>
+            </Link>
+          )}
         </div>
       </div>
     </>
