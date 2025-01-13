@@ -1,17 +1,45 @@
 import React from "react";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useCart from "../../hooks/useCart";
+
 
 const FoodCard = ({item}) => {
   const {user} = useAuth()
   const navigate = useNavigate()
-    const {name,image,price,recipe} = item
+  const location = useLocation()
+  const axiosSecure = useAxiosSecure()
+  const [,refetch] = useCart()
+    const {name,image,price,recipe,_id} = item
 
-    const handleFoodCart = (food)=>{
-          console.log(food)
+    const handleFoodCart = ()=>{
+          
           if(user && user?.email){
             // set data to database
+            console.log(user.email)
+            const cartItem = {
+                  menuId:_id,
+                  email:user.email,
+                  name,
+                  image,
+                  price
+            }
+            
+            axiosSecure.post('/carts',cartItem)
+            .then(res=>{
+              console.log(res.data)
+              if(res.data.insertedId){
+                Swal.fire({
+                  title:`${name} is added`,
+                  timer:1500
+                })
+              }
+              refetch()
+              
+            })
+            
           }else{
             Swal.fire({
               title: "You are not logged in?",
@@ -24,7 +52,7 @@ const FoodCard = ({item}) => {
             }).then((result) => {
               if (result.isConfirmed) {
               //  send to the user login page
-              navigate('/login')
+              navigate('/login',{state:{from:location}})
               }
             });
           }
@@ -43,7 +71,7 @@ const FoodCard = ({item}) => {
         <h2 className="card-title">{name}</h2>
         <p>{recipe}</p>
         <div className="card-actions">
-          <button onClick={()=>handleFoodCart(item)} className="btn btn-outline bg-slate-100 border-0 border-b-4 border-yellow-600">
+          <button onClick={handleFoodCart} className="btn btn-outline bg-slate-100 border-0 border-b-4 border-yellow-600">
             Add To Cart
           </button>
         </div>
