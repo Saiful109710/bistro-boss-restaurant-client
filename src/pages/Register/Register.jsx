@@ -7,10 +7,12 @@ import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { AuthContext } from "../../provider/AuthProvider";
 import Swal from "sweetalert2";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Register = () => {
-  const navigate = useNavigate()
-    const {createUser,updateUserProfile} = useContext(AuthContext)
+  const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
+  const { createUser, updateUserProfile } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -20,27 +22,35 @@ const Register = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data)
-    createUser(data.email,data.password)
-    .then(result=>{
-      console.log(result.user)
-      updateUserProfile(data.name,data.photoUrl)
-      .then(()=>{
-        console.log('profile updated successful')
-        reset()
-        Swal.fire({
-          title:'Registration successful'
-        })
-        navigate('/')
-        
+    console.log(data);
+    createUser(data.email, data.password)
+      .then((result) => {
+        console.log(result.user);
+        updateUserProfile(data.name, data.photoUrl)
+          .then(() => {
+            console.log("profile updated successful");
+            const userInfo = {
+              name: data.name,
+              email: data.email,
+            };
+            axiosPublic.post("/users", userInfo).then((res) => {
+              if (res.data.insertedId) {
+                console.log('user added to the database')
+                reset();
+                Swal.fire({
+                  title: "Registration successful",
+                });
+                navigate("/");
+              }
+            });
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
       })
-      .catch(err=>{
-        console.log(err.message)
-      })
-    })
-    .catch(err=>{
-        console.log(err.message)
-    })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   // const handleSubmit = (e)=>{
@@ -53,125 +63,134 @@ const Register = () => {
 
   // }
   return (
-   <>
-   <Helmet>
-    <title>Bistro Boss | Register</title>
-   </Helmet>
-     <div
-      style={{ backgroundImage: `url(${loginBgImg})` }}
-      className="hero bg-base-200 min-h-screen "
-    >
+    <>
+      <Helmet>
+        <title>Bistro Boss | Register</title>
+      </Helmet>
       <div
         style={{ backgroundImage: `url(${loginBgImg})` }}
-        className="hero-content shadow-xl drop-shadow-lg  flex-col md:flex-row"
+        className="hero bg-base-200 min-h-screen "
       >
-        <div className="text-center lg:text-left">
-          <img src={loginImg} alt="" />
-        </div>
-        <div className="card py-10  w-full max-w-sm shrink-0 ">
-          <h2 className="text-4xl font-bold text-slate-800">Sign Up</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="card-body">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Name</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                {...register("name", { required: true })}
-                placeholder="Name"
-                className="input input-bordered"
-              />
-              {errors.name && (
-                <span className="text-red-500">Name field is required</span>
-              )}
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Photo Url</span>
-              </label>
-              <input
-                type="text"
-                name="photoUrl"
-                {...register("photoUrl", { required: true })}
-                placeholder="Name"
-                className="input input-bordered"
-              />
-              {errors.photoUrl && (
-                <span className="text-red-500">Photo field is required</span>
-              )}
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                {...register("email", { required: true })}
-                placeholder="email"
-                className="input input-bordered"
-              />
-              {errors.name && (
-                <span className="text-red-500">Name field is required</span>
-              )}
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="password"
-                name="password"
-                {...register("password", { minLength: 6, maxLength: 20 ,pattern:/^(?=.*[a-z])(?=.*[A-Z]).*$/})}
-                placeholder="password"
-                className="input input-bordered"
-              />
-              {errors.password?.type === "required" && (
-                <p className="text-red-600">password field is required</p>
-              )}
+        <div
+          style={{ backgroundImage: `url(${loginBgImg})` }}
+          className="hero-content shadow-xl drop-shadow-lg  flex-col md:flex-row"
+        >
+          <div className="text-center lg:text-left">
+            <img src={loginImg} alt="" />
+          </div>
+          <div className="card py-10  w-full max-w-sm shrink-0 ">
+            <h2 className="text-4xl font-bold text-slate-800">Sign Up</h2>
+            <form onSubmit={handleSubmit(onSubmit)} className="card-body">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Name</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  {...register("name", { required: true })}
+                  placeholder="Name"
+                  className="input input-bordered"
+                />
+                {errors.name && (
+                  <span className="text-red-500">Name field is required</span>
+                )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Photo Url</span>
+                </label>
+                <input
+                  type="text"
+                  name="photoUrl"
+                  {...register("photoUrl", { required: true })}
+                  placeholder="Name"
+                  className="input input-bordered"
+                />
+                {errors.photoUrl && (
+                  <span className="text-red-500">Photo field is required</span>
+                )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  {...register("email", { required: true })}
+                  placeholder="email"
+                  className="input input-bordered"
+                />
+                {errors.name && (
+                  <span className="text-red-500">Name field is required</span>
+                )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Password</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  {...register("password", {
+                    minLength: 6,
+                    maxLength: 20,
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z]).*$/,
+                  })}
+                  placeholder="password"
+                  className="input input-bordered"
+                />
+                {errors.password?.type === "required" && (
+                  <p className="text-red-600">password field is required</p>
+                )}
                 {errors.password?.type === "minLength" && (
-                <p className="text-red-600">Password must be 6 character</p>
-              )}
-               {errors.password?.type === "maxLength" && (
-                <p className="text-red-600">Password must be less then 20 character</p>
-              )}
-              {errors.password?.type === "pattern" && (
-                <p className="text-red-600">Password must at least one uppercase,lowercase,one number and one special number</p>
-              )}
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Confirm Password</span>
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                {...register("confirmPassword")}
-                placeholder="Confirm Password"
-                className="input input-bordered"
-              />
-            </div>
+                  <p className="text-red-600">Password must be 6 character</p>
+                )}
+                {errors.password?.type === "maxLength" && (
+                  <p className="text-red-600">
+                    Password must be less then 20 character
+                  </p>
+                )}
+                {errors.password?.type === "pattern" && (
+                  <p className="text-red-600">
+                    Password must at least one uppercase,lowercase,one number
+                    and one special number
+                  </p>
+                )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Confirm Password</span>
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  {...register("confirmPassword")}
+                  placeholder="Confirm Password"
+                  className="input input-bordered"
+                />
+              </div>
 
-            <div className="form-control mt-6">
-              <button className="btn btn-outline border-0 border-b-4 border-yellow-600">
-                Sign Up
-              </button>
+              <div className="form-control mt-6">
+                <button className="btn btn-outline border-0 border-b-4 border-yellow-600">
+                  Sign Up
+                </button>
+              </div>
+            </form>
+            <div className="flex flex-col justify-center items-center space-y-2">
+              <p className="text-yellow-600 text-center">
+                Already Have an Account? <Link to="/login">Go to Log In</Link>{" "}
+              </p>
+              <p className="text-center text-slate-600 font-medium">
+                Or Sign in with
+              </p>
+              <SocialLogin></SocialLogin>
             </div>
-          </form>
-          <div className="flex flex-col justify-center items-center space-y-2">
-            <p className="text-yellow-600 text-center">
-              Already Have an Account? <Link to="/login">Go to Log In</Link>{" "}
-            </p>
-            <p className="text-center text-slate-600 font-medium">
-              Or Sign in with
-            </p>
-            <SocialLogin></SocialLogin>
           </div>
         </div>
       </div>
-    </div>
-   </>
+    </>
   );
 };
 
