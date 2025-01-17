@@ -5,6 +5,7 @@ import {
   FaComment,
   FaHome,
   FaList,
+  FaMoneyBillAlt,
   FaPhoneAlt,
   FaSearch,
   FaShoppingCart,
@@ -62,8 +63,8 @@ const DashBoard = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/reservation">
-                  <FaCalendar></FaCalendar> Reservation
+                <NavLink to="/dashboard/paymentHistory">
+                  <FaMoneyBillAlt></FaMoneyBillAlt> Payment History
                 </NavLink>
               </li>
               <li>
